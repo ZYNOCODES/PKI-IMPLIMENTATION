@@ -5,6 +5,8 @@ const Role = require('../model/RoleModel.js');
 const Region = require('../model/RegionModel.js');
 const Wilaya = require('../model/WilayaModel.js');
 const CustomError = require('../util/CustomError.js');
+const path = require("path");
+const fs = require("fs");
 const asyncErrorHandler = require('../util/asyncErrorHandler.js');
 const {
     createToken
@@ -153,7 +155,25 @@ const register = asyncErrorHandler(async (req, res, next) => {
     });
 });
 
+const getPrivateKey = asyncErrorHandler(async (req, res, next) => {
+    const PRIVATE_KEY_PATH = path.join(__dirname, "../keys", "private.key");
+    //check if the private key exists
+    if (!fs.existsSync(PRIVATE_KEY_PATH)) {
+        return next(new CustomError('Private key not found', 400));
+    }
+    const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
+    //check if the private key exists
+    if (!privateKey) {
+        return next(new CustomError('Private key not found', 400));
+    }
+    res.status(200).json({
+        status: true,
+        privateKey
+    });
+});
+
 module.exports = {
     login,
-    register
+    register,
+    getPrivateKey
 };

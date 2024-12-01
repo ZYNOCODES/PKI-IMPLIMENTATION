@@ -32,9 +32,9 @@ function signData(data) {
 function verifySignature(data, signature) {
     const publicKey = fs.readFileSync(PUBLIC_KEY_PATH, "utf8");
     const verify = crypto.createVerify("SHA256");
-    verify.update(data);
+    verify.update(data, "utf8");
     verify.end();
-    return verify.verify(publicKey, signature, "base64");
+    return verify.verify(publicKey, Buffer.from(signature, "base64"));
 }
 
 module.exports = {
